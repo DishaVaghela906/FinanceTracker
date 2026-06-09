@@ -1,10 +1,14 @@
 package SpringBoot.Personal_Finance_Tracker.model.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -25,6 +29,11 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @OneToMany(mappedBy = "user")
+    private List<Income> incomes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Expense> expenses = new ArrayList<>();
 
     public User(){
 
@@ -66,5 +75,21 @@ public class User {
 
     public String getPassword(){
         return password;
+    }
+
+    public void setIncomes(List<Income> incomes){
+        this.incomes = incomes;
+    }
+
+    public List<Income> getIncomes(){
+        return incomes;
+    }
+
+    public void setExpenses(List<Expense> expenses){
+        this.expenses = expenses;
+    }
+
+    public List<Expense> getExpenses(){
+        return expenses;
     }
 }

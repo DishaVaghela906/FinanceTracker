@@ -10,23 +10,29 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name =  "User")
-public class User {
+public class UserEntity {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy =  GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
 
     @Column(name = "user_name")
+    @NotBlank(message =  "Username should not be null or empty or should not contains only whitespace characters.")
     private String userName;
 
     @Column(name = "user_email")
+    @NotBlank(message = "User email should not be null or empty or should not contains only whitespace characters.")
+    @Email(message = "Invalid user Email")
     private String userEmail;
 
     @Column(name = "password")
+    @NotBlank(message = "password should not be null or empty or should not contains only whitespace characters.")
     private String password;
 
     @OneToMany(mappedBy = "user")
@@ -35,11 +41,11 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Expense> expenses = new ArrayList<>();
 
-    public User(){
+    public UserEntity(){
 
     }
 
-    public User(String userName, String userEmail, String password){
+    public UserEntity(String userName, String userEmail, String password){
         this.userName = userName;
         this.userEmail = userEmail;
         this.password = password;

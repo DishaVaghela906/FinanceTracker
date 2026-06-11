@@ -1,29 +1,66 @@
 package SpringBoot.Personal_Finance_Tracker.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import SpringBoot.Personal_Finance_Tracker.model.entity.User;
+import SpringBoot.Personal_Finance_Tracker.model.dto.LoginRequest;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.User;
+import SpringBoot.Personal_Finance_Tracker.model.entity.UserEntity;
 import SpringBoot.Personal_Finance_Tracker.repository.UserRepository;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService{
     
-    private final PasswordEncoder passwordEncoder;
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
-    UserService(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public UserEntity getUserbyUserEmail(String userEmail){
+        try{
+            System.out.println("Method getUserByUserEmail: ");
+            return userRepository.findByUserEmail(userEmail);
+        }catch(Exception e){
+            System.out.println("Exception getUserbyUserEmail: " + e.getMessage());
+            return null;
+        }
     }
 
-    public void addUser(User user){
+
+    public boolean addUser(UserEntity user){
         try{
+            System.out.println("Method : addUser");
+            if(userRepository.existsByUserEmail(user.getUserEmail())){
+                return false;
+            }
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepository.save(user);
+            return true;
         }catch(Exception e){
-            e.printStackTrace();
+            System.out.println("Exception addUser : " + e.getMessage());
+            //e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException{
+        try{
+            System.out.println("Method loadUserByUsername : ");
+            UserEntity user = getUserbyUserEmail(userEmail);
+            return User 
+                .builder()
+                .username(userEmail)
+                .password(user.getPassword())
+                .build();
+        }catch(Exception e){
+            System.out.println("Exception loadUserByUsername : " + e.getMessage());
+            return null;
         }
     }
 }

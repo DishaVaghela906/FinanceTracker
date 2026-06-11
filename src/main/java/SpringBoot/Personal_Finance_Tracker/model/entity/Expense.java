@@ -31,7 +31,7 @@ public class Expense {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserEntity user;
 
     public Expense(){
 
@@ -75,11 +75,11 @@ public class Expense {
         return expenseDate;
     }
 
-    public void setUser(User user){
+    public void setUser(UserEntity user){
         this.user = user;
     }
 
-    public User getUser(){
+    public UserEntity getUser(){
         return user;
     }
 }

@@ -198,14 +198,17 @@ Authorization: Bearer {token}
 Content-Type: application/json
 
 {
-  "amount": 500,
-  "category": "Groceries",
-  "date": "2024-06-12",
-  "description": "Weekly groceries"
+  "expenseAmount": 500.00,
+  "expenseCategory": "Groceries",
+  "expenseDate": "2026-06-12"  # ISO format (YYYY-MM-DD)
 }
 
 Response: 201 Created
+{
+  "message": "Expense added with id: 1"
+}
 ```
+Do not include `userId` in the request body — the server extracts the authenticated user's email from the JWT and associates the record with that user.
 
 ## Project Structure
 
@@ -343,9 +346,9 @@ curl -X POST http://localhost:8080/income \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "amount": 5000,
-    "source": "Monthly Salary",
-    "date": "2024-06-12"
+    "incomeAmount": 5000.00,
+    "incomeSource": "Monthly Salary",
+    "incomeDate": "2026-06-12"
   }'
 ```
 

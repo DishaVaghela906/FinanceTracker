@@ -350,18 +350,6 @@ Contributions are welcome! Please follow these guidelines:
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## Future Enhancements
-
-- [ ] Add comprehensive expense and income filtering
-- [ ] Implement financial analytics and reports
-- [ ] Add budget creation and tracking
-- [ ] Create frontend UI (React/Angular)
-- [ ] Implement email notifications
-- [ ] Add data export functionality (PDF/CSV)
-- [ ] Multi-currency support
-- [ ] Recurring transactions
-- [ ] Transaction categorization automation
-
 ## Troubleshooting
 
 ### Database Connection Error

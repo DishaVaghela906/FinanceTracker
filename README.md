@@ -178,12 +178,15 @@ Authorization: Bearer {token}
 Content-Type: application/json
 
 {
-  "amount": 5000,
-  "source": "Salary",
-  "date": "2024-06-12"
+  "incomeAmount": 5000.00,
+  "incomeSource": "Salary",
+  "incomeDate": "2026-06-12"  # ISO format (YYYY-MM-DD)
 }
 
 Response: 201 Created
+{
+  "message": "Income added with id: 1"
+}
 ```
 
 ### Expense Management
@@ -261,6 +264,12 @@ Personal-Finance-Tracker/
 ### JWT Filter
 
 The `JwtFilter` intercepts all requests and validates the JWT token before allowing access to protected endpoints.
+
+The filter places the JWT subject (the user's email) into the Spring Security context as the principal. In controllers you can obtain the authenticated user's email with:
+
+```java
+String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+```
 
 ### Best Practices
 

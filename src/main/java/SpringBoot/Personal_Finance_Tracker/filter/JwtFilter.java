@@ -1,4 +1,4 @@
-package SpringBoot.Personal_Finance_Tracker.filter;
+/* package SpringBoot.Personal_Finance_Tracker.filter;
 
 import java.io.IOException;
 
@@ -22,4 +22,4 @@ public class JwtFilter extends OncePerRequestFilter{
             System.out.println("Exception doFilterInternal: " + e.getMessage());
         }
     }
-}
+} */

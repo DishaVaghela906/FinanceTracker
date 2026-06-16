@@ -62,4 +62,29 @@ public class ExpenseService {
             return null;
         }
     }
+
+    public boolean delteExpenseForUser(Long expenseId, String userEmail){
+        try{
+            System.out.println("Method DeleteExpenseForUser: ");
+            UserEntity user = userService.getUserbyUserEmail(userEmail);
+            if(user == null){
+                System.out.println("User doesn't exists");
+                return false;
+            }else{
+                Expense expense = expenseRepository.findByExpenseId(expenseId);
+                if(expense == null){
+                    System.out.println("Expense doesn't exists for user");
+                    return false;
+                }
+                if(expense.getUser().getUserEmail().equals(user.getUserEmail())){
+                    expenseRepository.delete(expense);
+                    return true;
+                }
+                return false;
+            }
+        }catch(Exception e){
+            System.out.println("Exception deleteExpenseForUser: " + e.getMessage());
+            return false;
+        }
+    }
 }

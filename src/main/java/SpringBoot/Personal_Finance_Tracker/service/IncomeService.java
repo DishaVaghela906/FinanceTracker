@@ -65,4 +65,26 @@ public class IncomeService {
 			return null;
 		}
 	}
+
+	public boolean deleteIncomeForUser(Long incomeId, String userEmail){
+		try{
+			System.out.println("Method deleteIncomeForUser: ");
+			UserEntity user = userService.getUserbyUserEmail(userEmail);
+			if(user == null){
+				return false;
+			}
+			Income income = incomeRepository.findByIncomeId(incomeId);
+			if(income == null){
+				return false;
+			}
+			if(income.getUser().getUserEmail().equals(user.getUserEmail())){
+				incomeRepository.delete(income);
+				return true;
+			}
+			return false;
+		}catch(Exception e){
+			System.out.println("Exception deleteIncome: " + e.getMessage());
+			return false;
+		}
+	}
 }

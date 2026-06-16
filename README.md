@@ -20,8 +20,8 @@ The application follows best practices for security, validation, and RESTful API
 - Password encryption using Spring Security
 
 ✅ **Financial Management**
-- Income tracking and management
-- Expense tracking and management
+- Income tracking, management, and updates
+- Expense tracking, management, and updates
 - View financial records
 
 ✅ **Security**
@@ -180,13 +180,27 @@ Content-Type: application/json
 {
   "incomeAmount": 5000.00,
   "incomeSource": "Salary",
-  "incomeDate": "2026-06-12"  # ISO format (YYYY-MM-DD)
+  "incomeDate": "2026-06-12"
 }
 
 Response: 201 Created
+Income added with id: 1
+```
+
+#### Update Income
+```
+PUT /income/{id}
+Authorization: Bearer {token}
+Content-Type: application/json
+
 {
-  "message": "Income added with id: 1"
+  "incomeAmount": 5200.00,
+  "incomeSource": "Updated Salary",
+  "incomeDate": "2026-06-15"
 }
+
+Response: 202 Accepted
+Income updated with id : {id}
 ```
 
 ### Expense Management
@@ -200,14 +214,29 @@ Content-Type: application/json
 {
   "expenseAmount": 500.00,
   "expenseCategory": "Groceries",
-  "expenseDate": "2026-06-12"  # ISO format (YYYY-MM-DD)
+  "expenseDate": "2026-06-12"
 }
 
 Response: 201 Created
-{
-  "message": "Expense added with id: 1"
-}
+Expense added with id: 1
 ```
+
+#### Update Expense
+```
+PUT /expense/{id}
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "expenseAmount": 550.00,
+  "expenseCategory": "Groceries",
+  "expenseDate": "2026-06-15"
+}
+
+Response: 202 Accepted
+Expense updated with id : {id}
+```
+
 Do not include `userId` in the request body — the server extracts the authenticated user's email from the JWT and associates the record with that user.
 
 ## Project Structure

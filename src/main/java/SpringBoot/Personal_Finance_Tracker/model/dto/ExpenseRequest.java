@@ -2,14 +2,18 @@ package SpringBoot.Personal_Finance_Tracker.model.dto;
 
 import java.time.LocalDate;
 
-import org.springframework.cglib.core.Local;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class ExpenseRequest {
    
+    @NotNull(message = "Expense amount should not be null")
     private Double expenseAmount;
 
+    @NotBlank(message = "Expense Category should not be null, empty and not contain only whitespace charater")
     private String expenseCategory;
 
+    @NotNull(message = "Expense Date should not be null")
     private LocalDate expenseDate;
 
     public ExpenseRequest(){

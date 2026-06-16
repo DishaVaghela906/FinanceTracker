@@ -5,7 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,6 +41,27 @@ public class ExpenseController {
         }catch(Exception e){
             System.out.println("Exception addExpense: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Exception occured");
+        }
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<String> updateExpense(@RequestBody @Valid ExpenseRequest expenseRequest, @PathVariable Long id){
+        try{
+            System.out.println("Method updateExpense API: ");
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if(authentication == null || authentication.getName() == null){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+            }
+            String userEmail = authentication.getName();
+            System.out.println("userEmail: " + userEmail);
+            Expense updated = expenseService.updateExpenseForUser(id,expenseRequest,userEmail);
+            if(updated == null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update income");
+            }
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Expense updated with id : " + id);
+        }catch(Exception e){
+            System.out.println("Exception updateExpense: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Exception in updateExpense");
         }
     }
 }

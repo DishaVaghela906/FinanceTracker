@@ -1,6 +1,8 @@
 package SpringBoot.Personal_Finance_Tracker.service;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import SpringBoot.Personal_Finance_Tracker.model.dto.IncomeRequest;
+import SpringBoot.Personal_Finance_Tracker.model.dto.IncomeResponse;
 import SpringBoot.Personal_Finance_Tracker.model.entity.Income;
 import SpringBoot.Personal_Finance_Tracker.model.entity.UserEntity;
 import SpringBoot.Personal_Finance_Tracker.repository.IncomeRepository;
@@ -87,4 +90,28 @@ public class IncomeService {
 			return false;
 		}
 	}
+
+    public List<IncomeResponse> getAllIncomeForUser(String userEmail){
+        try{
+            System.out.println("Method getAllIncomeForUser: ");
+            UserEntity user = userService.getUserbyUserEmail(userEmail);
+            if(user == null){
+                return null;
+            }
+            List<Income> incomes = incomeRepository.findAllByUser(user);
+            List<IncomeResponse> responseList = new ArrayList<>();
+            for(Income income : incomes){
+                responseList.add(new IncomeResponse(
+                    income.getIncomeId(),
+                    income.getIncomeAmount(),
+                    income.getIncomeSource(),
+                    income.getIncomeDate() != null ? income.getIncomeDate().toLocalDate() : null
+                ));
+            }
+            return responseList;
+        }catch(Exception e){
+            System.out.println("Exception getAllIncomeForUser: " + e.getMessage());
+            return null;
+        }
+    }
 }

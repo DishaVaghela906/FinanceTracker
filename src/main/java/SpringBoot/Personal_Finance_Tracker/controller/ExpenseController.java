@@ -1,11 +1,16 @@
 package SpringBoot.Personal_Finance_Tracker.controller;
 
+import java.util.List;
+
+import javax.swing.plaf.synth.SynthDesktopIconUI;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import SpringBoot.Personal_Finance_Tracker.model.dto.ExpenseRequest;
+import SpringBoot.Personal_Finance_Tracker.model.dto.ExpenseResponse;
 import SpringBoot.Personal_Finance_Tracker.model.entity.Expense;
 import SpringBoot.Personal_Finance_Tracker.service.ExpenseService;
 import jakarta.validation.Valid;
@@ -25,6 +31,27 @@ public class ExpenseController {
 
     @Autowired
     private ExpenseService expenseService;
+
+    @GetMapping
+    public ResponseEntity<List<ExpenseResponse>> getAllExpense(){
+        try{
+            System.out.println("Method getAllExpense: ");
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if(authentication == null || authentication.getName() == null){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            String userEmail = authentication.getName();
+            System.out.println("userEmail : " + userEmail);
+            List<ExpenseResponse> expenses = expenseService.getAllExpenseForUser(userEmail);
+            if(expenses == null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+            return ResponseEntity.ok(expenses);
+        }catch(Exception e){
+            System.out.println("Exception getAllExpense: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
     
     @PostMapping
     public ResponseEntity<String> addExpense(@RequestBody @Valid ExpenseRequest expenseRequest){

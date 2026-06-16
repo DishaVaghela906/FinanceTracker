@@ -1,11 +1,14 @@
 package SpringBoot.Personal_Finance_Tracker.service;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import SpringBoot.Personal_Finance_Tracker.model.dto.ExpenseRequest;
+import SpringBoot.Personal_Finance_Tracker.model.dto.ExpenseResponse;
 import SpringBoot.Personal_Finance_Tracker.model.entity.Expense;
 import SpringBoot.Personal_Finance_Tracker.model.entity.UserEntity;
 import SpringBoot.Personal_Finance_Tracker.repository.ExpenseRepository;
@@ -20,6 +23,30 @@ public class ExpenseService {
     @Autowired
     private UserService userService;
 
+    public List<ExpenseResponse> getAllExpenseForUser(String userEmail){
+        try{
+            System.out.println("Method getAllExpenseForUser: ");
+            UserEntity user = userService.getUserbyUserEmail(userEmail);
+            if(user == null){
+                return null;
+            }
+            List<Expense> expenses = expenseRepository.findAllByUser(user);
+            List<ExpenseResponse> responseList = new ArrayList<>();
+            for(Expense expense : expenses){
+                responseList.add(new ExpenseResponse(
+                    expense.getExpenseId(), 
+                    expense.getExpenseAmount(), 
+                    expense.getExpenseCategory(),
+                    expense.getExpenseDate() != null ? expense.getExpenseDate().toLocalDate() : null
+                ));
+            }
+            System.out.println(responseList);
+            return responseList;
+        }catch(Exception e){
+            System.out.println("Exception getAllExpenseForUser: " + e.getMessage());
+            return null;
+        }
+    }
 
     public Expense addExpenseForUser(ExpenseRequest expenseRequest, String userEmail){
         try{

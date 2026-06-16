@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import SpringBoot.Personal_Finance_Tracker.model.entity.Income;
+import SpringBoot.Personal_Finance_Tracker.model.entity.UserEntity;
 import java.util.List;
 
 
@@ -11,5 +12,7 @@ import java.util.List;
 public interface IncomeRepository extends JpaRepository<Income, Long>{
 
     public Income findByIncomeId(Long incomeId);
+
+    public List<Income> findAllByUser(UserEntity user);
     
 }

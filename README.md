@@ -20,8 +20,8 @@ The application follows best practices for security, validation, and RESTful API
 - Password encryption using Spring Security
 
 ✅ **Financial Management**
-- Income tracking, management, updates, and deletion
-- Expense tracking, management, updates, and deletion
+- Income tracking, management, updates, deletion, and retrieval for authenticated users
+- Expense tracking, management, updates, deletion, and retrieval for authenticated users
 - View financial records
 
 ✅ **Security**
@@ -253,6 +253,38 @@ Authorization: Bearer {token}
 
 Response: 200 OK
 Expense deleted with id : {id}
+```
+
+#### Get all incomes for authenticated user
+```
+GET /income
+Authorization: Bearer {token}
+
+Response: 200 OK
+[
+  {
+    "incomeId": 1,
+    "incomeAmount": 5000.0,
+    "incomeSource": "Salary",
+    "incomeDate": "2026-06-12"
+  }
+]
+```
+
+#### Get all expenses for authenticated user
+```
+GET /expense
+Authorization: Bearer {token}
+
+Response: 200 OK
+[
+  {
+    "expenseId": 1,
+    "expenseAmount": 500.0,
+    "expenseCategory": "Groceries",
+    "expenseDate": "2026-06-12"
+  }
+]
 ```
 
 Do not include `userId` in the request body — the server extracts the authenticated user's email from the JWT and associates the record with that user.

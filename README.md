@@ -23,6 +23,7 @@ The application follows best practices for security, validation, and RESTful API
 - Income tracking, management, updates, deletion, and retrieval for authenticated users
 - Expense tracking, management, updates, deletion, and retrieval for authenticated users
 - View financial records
+- Balance calculation with total income, total expenses, and net balance
 
 ✅ **Security**
 - JWT-based token authentication
@@ -287,6 +288,26 @@ Response: 200 OK
 ]
 ```
 
+### Balance Calculation
+
+#### Get Balance Summary
+```
+GET /balance
+Authorization: Bearer {token}
+
+Response: 200 OK
+{
+  "totalIncome": 5000.0,
+  "totalExpense": 500.0,
+  "balance": 4500.0
+}
+```
+
+Calculates and returns the authenticated user's financial balance by:
+- Summing all income transactions
+- Summing all expense transactions
+- Computing balance as: **Total Income - Total Expenses**
+
 Do not include `userId` in the request body — the server extracts the authenticated user's email from the JWT and associates the record with that user.
 
 ## Project Structure
@@ -299,9 +320,12 @@ Personal-Finance-Tracker/
 │   │   │   ├── controller/          # REST API Controllers
 │   │   │   │   ├── UserController.java
 │   │   │   │   ├── IncomeController.java
-│   │   │   │   └── ExpenseController.java
+│   │   │   │   ├── ExpenseController.java
+│   │   │   │   └── BalanceController.java
 │   │   │   ├── service/             # Business Logic
 │   │   │   │   ├── UserService.java
+│   │   │   │   ├── IncomeService.java
+│   │   │   │   ├── ExpenseService.java
 │   │   │   │   └── JwtService.java
 │   │   │   ├── repository/          # Data Access Layer
 │   │   │   │   ├── UserRepository.java
@@ -310,7 +334,12 @@ Personal-Finance-Tracker/
 │   │   │   ├── model/               # Data Models
 │   │   │   │   ├── dto/             # Data Transfer Objects
 │   │   │   │   │   ├── LoginRequest.java
-│   │   │   │   │   └── LoginResponse.java
+│   │   │   │   │   ├── LoginResponse.java
+│   │   │   │   │   ├── IncomeRequest.java
+│   │   │   │   │   ├── IncomeResponse.java
+│   │   │   │   │   ├── ExpenseRequest.java
+│   │   │   │   │   ├── ExpenseResponse.java
+│   │   │   │   │   └── BalanceResponse.java
 │   │   │   │   └── entity/          # JPA Entities
 │   │   │   │       ├── UserEntity.java
 │   │   │   │       ├── Income.java
@@ -469,6 +498,6 @@ For issues, questions, or suggestions, please open an issue in the repository or
 
 ---
 
-**Last Updated:** June 2024  
-**Version:** 0.0.1-SNAPSHOT  
+**Last Updated:** June 17, 2026  
+**Version:** 0.0.2-SNAPSHOT  
 **Status:** In Development

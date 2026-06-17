@@ -114,4 +114,20 @@ public class IncomeService {
             return null;
         }
     }
+
+    public Double getTotalIncomeForUser(String userEmail){
+        try{
+            System.out.println("Method getTotalIncomeForUser: ");
+            UserEntity user = userService.getUserbyUserEmail(userEmail);
+            if(user == null){
+                return 0.0;
+            }
+            Double totalIncome = incomeRepository.getTotalIncomeForUser(user);
+            System.out.println("Total Income: " + totalIncome);
+            return totalIncome;
+        }catch(Exception e){
+            System.out.println("Exception getTotalIncomeForUser: " + e.getMessage());
+            return 0.0;
+        }
+    }
 }

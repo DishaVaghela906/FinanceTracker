@@ -114,4 +114,20 @@ public class ExpenseService {
             return false;
         }
     }
+
+    public Double getTotalExpenseForUser(String userEmail){
+        try{
+            System.out.println("Method getTotalExpenseForUser: ");
+            UserEntity user = userService.getUserbyUserEmail(userEmail);
+            if(user == null){
+                return 0.0;
+            }
+            Double totalExpense = expenseRepository.getTotalExpenseForUser(user);
+            System.out.println("Total Expense: " + totalExpense);
+            return totalExpense;
+        }catch(Exception e){
+            System.out.println("Exception getTotalExpenseForUser: " + e.getMessage());
+            return 0.0;
+        }
+    }
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import SpringBoot.Personal_Finance_Tracker.model.dto.IncomeRequest;
 import SpringBoot.Personal_Finance_Tracker.model.dto.IncomeResponse;
+import SpringBoot.Personal_Finance_Tracker.model.dto.ResponseWrapper;
 import SpringBoot.Personal_Finance_Tracker.model.entity.Income;
 import SpringBoot.Personal_Finance_Tracker.service.IncomeService;
 
@@ -31,83 +32,86 @@ public class IncomeController {
     private IncomeService incomeService;
 
     @GetMapping
-    public ResponseEntity<List<IncomeResponse>> getAllIncome(){
+    public ResponseEntity<ResponseWrapper<List<IncomeResponse>>> getAllIncome(){
         try{
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if(authentication == null || authentication.getName() == null){
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ResponseWrapper.error("Unauthorized"));
             }
             String userEmail = authentication.getName();
             List<IncomeResponse> incomes = incomeService.getAllIncomeForUser(userEmail);
             if(incomes == null){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResponseWrapper.error("Unable to retrieve incomes"));
             }
-            return ResponseEntity.ok(incomes);
+            return ResponseEntity.ok(ResponseWrapper.success(incomes, "Incomes retrieved successfully"));
         }catch(Exception e){
             System.out.println("Exception getAllIncome: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseWrapper.error("Internal server error"));
         }
     }
 
     @PostMapping
-    public ResponseEntity<String> addIncome(@RequestBody @Valid IncomeRequest incomeRequest){
+    public ResponseEntity<ResponseWrapper<String>> addIncome(@RequestBody @Valid IncomeRequest incomeRequest){
         try{
             System.out.println("Method addIncome: ");
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if(authentication == null || authentication.getName() == null){
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseWrapper.error("Unauthorized"));
             }
             String userEmail = authentication.getName();
             Income saved = incomeService.addIncomeForUser(incomeRequest, userEmail);
             if(saved == null){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to save income");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseWrapper.error("Unable to save income"));
             }
-            return ResponseEntity.status(HttpStatus.CREATED).body("Income added with id: " + saved.getIncomeId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(ResponseWrapper.success("Income added with id: " + saved.getIncomeId()));
         }catch(Exception e){
             System.out.println("Exception addIncome: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Exception in addIncome");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseWrapper.error("Exception in addIncome"));
         }
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<String> updateIncome(@RequestBody @Valid IncomeRequest incomeRequest, @PathVariable Long id){
+    public ResponseEntity<ResponseWrapper<String>> updateIncome(@RequestBody @Valid IncomeRequest incomeRequest, @PathVariable Long id){
         try{
             System.out.println("Method updateIncome api : ");
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if(authentication == null || authentication.getName() == null){
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseWrapper.error("Unauthorized"));
             }
             String userEmail  = authentication.getName();
             System.out.println("userEmail : " + userEmail);
             Income updated = incomeService.updateIncome(id, incomeRequest, userEmail);
             if(updated == null){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update income");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseWrapper.error("Unable to update income"));
             }
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Income updated with id : " + id);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(ResponseWrapper.success("Income updated with id : " + id));
         }catch(Exception e){
             System.out.println("Exception updateIncome: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Exception in updateIncome");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseWrapper.error("Exception in updateIncome"));
         }
     }    
 
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteIncome(@PathVariable Long id){
+    public ResponseEntity<ResponseWrapper<String>> deleteIncome(@PathVariable Long id){
         try{
             System.out.println("Method deleteIncome API : ");
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if(authentication == null || authentication.getName() == null){
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseWrapper.error("Unauthorized"));
             }
             String userEmail  = authentication.getName();
             System.out.println("userEmail : " + userEmail);
             boolean deleted = incomeService.deleteIncomeForUser(id, userEmail);
             if(!deleted){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to delete income");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseWrapper.error("Unable to delete income"));
             }
-            return ResponseEntity.status(HttpStatus.OK).body("Income deleted with id : " + id);
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseWrapper.success("Income deleted with id : " + id));
         }catch(Exception e){
             System.out.println("Exception deleteIncome: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Exception in deleteIncome");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseWrapper.error("Exception in deleteIncome"));
         }
     }
 }

@@ -135,6 +135,23 @@ Update the `jwt.secret` property in `application.properties` with your generated
 
 ## API Endpoints
 
+### Standard Response Format
+All API responses use a common wrapper structure:
+
+```json
+{
+  "success": true,
+  "message": "Request completed successfully",
+  "data": { ... },
+  "timestamp": 1710000000000
+}
+```
+
+- `success`: `true` when the operation succeeds, otherwise `false`
+- `message`: a human-readable status message
+- `data`: the payload for successful responses
+- `timestamp`: server response time in milliseconds
+
 ### User Management
 
 #### Register User
@@ -150,7 +167,10 @@ Content-Type: application/json
 
 Response: 201 Created
 {
-  "message": "User registered successfully"
+  "success": true,
+  "message": "User registered successfully",
+  "data": "User registered successfully",
+  "timestamp": 1710000000000
 }
 ```
 
@@ -166,8 +186,13 @@ Content-Type: application/json
 
 Response: 200 OK
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "message": "Login successful"
+  "success": true,
+  "message": "Login processed",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "message": "Login successful"
+  },
+  "timestamp": 1710000000000
 }
 ```
 
@@ -186,7 +211,12 @@ Content-Type: application/json
 }
 
 Response: 201 Created
-Income added with id: 1
+{
+  "success": true,
+  "message": "Income added successfully",
+  "data": "Income added with id: 1",
+  "timestamp": 1710000000000
+}
 ```
 
 #### Update Income
@@ -202,7 +232,12 @@ Content-Type: application/json
 }
 
 Response: 202 Accepted
-Income updated with id : {id}
+{
+  "success": true,
+  "message": "Income updated successfully",
+  "data": "Income updated with id : {id}",
+  "timestamp": 1710000000000
+}
 ```
 
 #### Delete Income
@@ -211,7 +246,12 @@ DELETE /income/{id}
 Authorization: Bearer {token}
 
 Response: 200 OK
-Income deleted with id : {id}
+{
+  "success": true,
+  "message": "Income deleted successfully",
+  "data": "Income deleted with id : {id}",
+  "timestamp": 1710000000000
+}
 ```
 
 ### Expense Management
@@ -229,7 +269,12 @@ Content-Type: application/json
 }
 
 Response: 201 Created
-Expense added with id: 1
+{
+  "success": true,
+  "message": "Expense added successfully",
+  "data": "Expense added with id: 1",
+  "timestamp": 1710000000000
+}
 ```
 
 #### Update Expense
@@ -245,7 +290,12 @@ Content-Type: application/json
 }
 
 Response: 202 Accepted
-Expense updated with id : {id}
+{
+  "success": true,
+  "message": "Expense updated successfully",
+  "data": "Expense updated with id : {id}",
+  "timestamp": 1710000000000
+}
 ```
 
 #### Delete Expense
@@ -254,7 +304,12 @@ DELETE /expense/{id}
 Authorization: Bearer {token}
 
 Response: 200 OK
-Expense deleted with id : {id}
+{
+  "success": true,
+  "message": "Expense deleted successfully",
+  "data": "Expense deleted with id : {id}",
+  "timestamp": 1710000000000
+}
 ```
 
 #### Get all incomes for authenticated user
@@ -263,14 +318,19 @@ GET /income
 Authorization: Bearer {token}
 
 Response: 200 OK
-[
-  {
-    "incomeId": 1,
-    "incomeAmount": 5000.0,
-    "incomeSource": "Salary",
-    "incomeDate": "2026-06-12"
-  }
-]
+{
+  "success": true,
+  "message": "Incomes retrieved successfully",
+  "data": [
+    {
+      "incomeId": 1,
+      "incomeAmount": 5000.0,
+      "incomeSource": "Salary",
+      "incomeDate": "2026-06-12"
+    }
+  ],
+  "timestamp": 1710000000000
+}
 ```
 
 #### Get all expenses for authenticated user
@@ -279,14 +339,19 @@ GET /expense
 Authorization: Bearer {token}
 
 Response: 200 OK
-[
-  {
-    "expenseId": 1,
-    "expenseAmount": 500.0,
-    "expenseCategory": "Groceries",
-    "expenseDate": "2026-06-12"
-  }
-]
+{
+  "success": true,
+  "message": "Expenses retrieved successfully",
+  "data": [
+    {
+      "expenseId": 1,
+      "expenseAmount": 500.0,
+      "expenseCategory": "Groceries",
+      "expenseDate": "2026-06-12"
+    }
+  ],
+  "timestamp": 1710000000000
+}
 ```
 
 ### Balance Calculation
@@ -298,9 +363,14 @@ Authorization: Bearer {token}
 
 Response: 200 OK
 {
-  "totalIncome": 5000.0,
-  "totalExpense": 500.0,
-  "balance": 4500.0
+  "success": true,
+  "message": "Balance retrieved successfully",
+  "data": {
+    "totalIncome": 5000.0,
+    "totalExpense": 500.0,
+    "balance": 4500.0
+  },
+  "timestamp": 1710000000000
 }
 ```
 
@@ -318,17 +388,22 @@ Authorization: Bearer {token}
 
 Response: 200 OK
 {
-  "year": 2026,
-  "month": 6,
-  "totalIncome": 5000.0,
-  "totalExpense": 1000.0,
-  "balance": 4000.0,
-  "expenseBreakdown": {
-    "Groceries": 31.0,
-    "Rent": 42.0,
-    "Travel": 15.0,
-    "Miscellaneous": 12.0
-  }
+  "success": true,
+  "message": "Monthly report retrieved successfully",
+  "data": {
+    "year": 2026,
+    "month": 6,
+    "totalIncome": 5000.0,
+    "totalExpense": 1000.0,
+    "balance": 4000.0,
+    "expenseBreakdown": {
+      "Groceries": 31.0,
+      "Rent": 42.0,
+      "Travel": 15.0,
+      "Miscellaneous": 12.0
+    }
+  },
+  "timestamp": 1710000000000
 }
 ```
 
@@ -378,7 +453,8 @@ Personal-Finance-Tracker/
 │   │   │   │   │   ├── ExpenseResponse.java
 │   │   │   │   │   ├── BalanceResponse.java
 │   │   │   │   │   ├── MonthlyReportResponse.java
-│   │   │   │   │   └── CategoryExpenseDto.java
+│   │   │   │   │   ├── CategoryExpenseDto.java
+│   │   │   │   │   └── ResponseWrapper.java
 │   │   │   │   └── entity/          # JPA Entities
 │   │   │   │       ├── UserEntity.java
 │   │   │   │       ├── Income.java

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import SpringBoot.Personal_Finance_Tracker.model.dto.ExpenseRequest;
 import SpringBoot.Personal_Finance_Tracker.model.dto.ExpenseResponse;
+import SpringBoot.Personal_Finance_Tracker.model.dto.ResponseWrapper;
 import SpringBoot.Personal_Finance_Tracker.model.entity.Expense;
 import SpringBoot.Personal_Finance_Tracker.service.ExpenseService;
 import jakarta.validation.Valid;
@@ -33,85 +34,85 @@ public class ExpenseController {
     private ExpenseService expenseService;
 
     @GetMapping
-    public ResponseEntity<List<ExpenseResponse>> getAllExpense(){
+    public ResponseEntity<ResponseWrapper<List<ExpenseResponse>>> getAllExpense(){
         try{
             System.out.println("Method getAllExpense: ");
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if(authentication == null || authentication.getName() == null){
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseWrapper.error("Unauthorized"));
             }
             String userEmail = authentication.getName();
             System.out.println("userEmail : " + userEmail);
             List<ExpenseResponse> expenses = expenseService.getAllExpenseForUser(userEmail);
             if(expenses == null){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseWrapper.error("Unable to retrieve expenses"));
             }
-            return ResponseEntity.ok(expenses);
+            return ResponseEntity.ok(ResponseWrapper.success(expenses, "Expenses retrieved successfully"));
         }catch(Exception e){
             System.out.println("Exception getAllExpense: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseWrapper.error("Internal server error"));
         }
     }
     
     @PostMapping
-    public ResponseEntity<String> addExpense(@RequestBody @Valid ExpenseRequest expenseRequest){
+    public ResponseEntity<ResponseWrapper<String>> addExpense(@RequestBody @Valid ExpenseRequest expenseRequest){
         try{
             System.out.println("Method addExpense: ");
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if(authentication == null || authentication.getName() ==null){
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseWrapper.error("Unauthorized"));
             }
             String userEmail = authentication.getName();
             Expense saved = expenseService.addExpenseForUser(expenseRequest, userEmail);
             if(saved == null){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add expense");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseWrapper.error("Unable to add expense"));
             }
-            return ResponseEntity.status(HttpStatus.CREATED).body("Expense added with id: " + saved.getExpenseId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(ResponseWrapper.success("Expense added with id: " + saved.getExpenseId()));
         }catch(Exception e){
             System.out.println("Exception addExpense: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Exception occured");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseWrapper.error("Exception occured"));
         }
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<String> updateExpense(@RequestBody @Valid ExpenseRequest expenseRequest, @PathVariable Long id){
+    public ResponseEntity<ResponseWrapper<String>> updateExpense(@RequestBody @Valid ExpenseRequest expenseRequest, @PathVariable Long id){
         try{
             System.out.println("Method updateExpense API: ");
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if(authentication == null || authentication.getName() == null){
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseWrapper.error("Unauthorized"));
             }
             String userEmail = authentication.getName();
             System.out.println("userEmail: " + userEmail);
             Expense updated = expenseService.updateExpenseForUser(id,expenseRequest,userEmail);
             if(updated == null){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update expense");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseWrapper.error("Unable to update expense"));
             }
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Expense updated with id : " + id);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(ResponseWrapper.success("Expense updated with id : " + id));
         }catch(Exception e){
             System.out.println("Exception updateExpense: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Exception in updateExpense");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseWrapper.error("Exception in updateExpense"));
         }
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteExpense(@PathVariable Long id){
+    public ResponseEntity<ResponseWrapper<String>> deleteExpense(@PathVariable Long id){
         try{
             System.out.println("Method deleteIncome API: ");
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if(authentication == null || authentication.getName() == null){
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseWrapper.error("Unauthorized"));
             }
             String userEmail = authentication.getName();
             System.out.println("userEmail: " + userEmail);
             boolean deleted = expenseService.delteExpenseForUser(id, userEmail);
             if(!deleted){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to delete expense");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseWrapper.error("Unable to delete expense"));
             }
-            return ResponseEntity.status(HttpStatus.OK).body("Expense delete with id : " + id);
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseWrapper.success("Expense delete with id : " + id));
         }catch(Exception e){
             System.out.println("Exception deleteExpense: "+ e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Exception in deleteIncome");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseWrapper.error("Exception in deleteExpense"));
         }
     }
 }

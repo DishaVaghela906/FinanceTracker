@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import SpringBoot.Personal_Finance_Tracker.model.dto.LoginRequest;
 import SpringBoot.Personal_Finance_Tracker.model.dto.LoginResponse;
+import SpringBoot.Personal_Finance_Tracker.model.dto.ResponseWrapper;
 import SpringBoot.Personal_Finance_Tracker.model.entity.UserEntity;
 import SpringBoot.Personal_Finance_Tracker.repository.UserRepository;
 import SpringBoot.Personal_Finance_Tracker.service.JwtService;
@@ -41,25 +42,27 @@ public class UserController {
     private AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody @Valid UserEntity user){
+    public ResponseEntity<ResponseWrapper<String>> registerUser(@RequestBody @Valid UserEntity user){
         try{
             System.out.println("Method : registerUser");
             if(userService.addUser(user)){
-                return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+                return ResponseEntity.status(HttpStatus.CREATED)
+                        .body(ResponseWrapper.success("User registered successfully"));
             }else{
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already exits");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResponseWrapper.error("User already exists"));
             }
             
         }catch(Exception e){
             System.out.println("Exception  registerUser: " + e.getMessage());
-            //e.printStackTrace();
-            return null;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseWrapper.error("Unable to register user"));
         }
         
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> loginUser(@RequestBody @Valid LoginRequest loginRequest){
+    public ResponseEntity<ResponseWrapper<LoginResponse>> loginUser(@RequestBody @Valid LoginRequest loginRequest){
         try{
             System.out.println("Method: LoginUser");
             
@@ -74,21 +77,23 @@ public class UserController {
 
                     if(passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())){
                         loginResponse.setToken(jwtService.generateToken(loginRequest.getUserEmail()));
-                        loginResponse.setMessage("Login successfull");
+                        loginResponse.setMessage("Login successful");
                     }else{
                         loginResponse.setToken(null);
-                        loginResponse.setMessage("Invalid Credentials");
+                        loginResponse.setMessage("Invalid credentials");
                     }
                 }else{
                     System.out.println(userRepository.existsByUserEmail(loginRequest.getUserEmail()));
                     loginResponse.setToken(null);
-                    loginResponse.setMessage("User doesn't exists");
+                    loginResponse.setMessage("User doesn't exist");
                 }
             }
-            return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ResponseWrapper.success(loginResponse, "Login processed"));
         }catch(Exception e){
             System.out.println("Exception loginUser: " + e.getMessage());
-            return null;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseWrapper.error("Unable to process login"));
         }
     }
 }

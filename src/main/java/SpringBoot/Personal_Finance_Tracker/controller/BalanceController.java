@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import SpringBoot.Personal_Finance_Tracker.model.dto.BalanceResponse;
+import SpringBoot.Personal_Finance_Tracker.model.dto.ResponseWrapper;
 import SpringBoot.Personal_Finance_Tracker.service.ExpenseService;
 import SpringBoot.Personal_Finance_Tracker.service.IncomeService;
 
@@ -24,12 +25,12 @@ public class BalanceController {
     private IncomeService incomeService;
 
     @GetMapping
-    public ResponseEntity<BalanceResponse> getBalance(){
+    public ResponseEntity<ResponseWrapper<BalanceResponse>> getBalance(){
         try{
             System.out.println("Method getBalance: ");
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if(authentication == null || authentication.getName() == null){
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseWrapper.error("Unauthorized"));
             }
             String userEmail = authentication.getName();
             System.out.println("userEmail : " + userEmail);
@@ -40,10 +41,10 @@ public class BalanceController {
             BalanceResponse balanceResponse = new BalanceResponse(totalIncome, totalExpense);
             System.out.println("Balance Response: " + balanceResponse);
             
-            return ResponseEntity.ok(balanceResponse);
+            return ResponseEntity.ok(ResponseWrapper.success(balanceResponse, "Balance retrieved successfully"));
         }catch(Exception e){
             System.out.println("Exception getBalance: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseWrapper.error("Unable to retrieve balance"));
         }
     }
 }

@@ -24,6 +24,7 @@ The application follows best practices for security, validation, and RESTful API
 - Expense tracking, management, updates, deletion, and retrieval for authenticated users
 - View financial records
 - Balance calculation with total income, total expenses, and net balance
+- Monthly financial reports with expense category breakdown and percentages
 
 ✅ **Security**
 - JWT-based token authentication
@@ -308,6 +309,40 @@ Calculates and returns the authenticated user's financial balance by:
 - Summing all expense transactions
 - Computing balance as: **Total Income - Total Expenses**
 
+### Reports Module
+
+#### Get Monthly Report
+```
+GET /reports/monthly?year=2026&month=6
+Authorization: Bearer {token}
+
+Response: 200 OK
+{
+  "year": 2026,
+  "month": 6,
+  "totalIncome": 5000.0,
+  "totalExpense": 1000.0,
+  "balance": 4000.0,
+  "expenseBreakdown": {
+    "Groceries": 31.0,
+    "Rent": 42.0,
+    "Travel": 15.0,
+    "Miscellaneous": 12.0
+  }
+}
+```
+
+Generates a comprehensive monthly financial report including:
+- **year** & **month**: Report period
+- **totalIncome**: Sum of all income for the month
+- **totalExpense**: Sum of all expenses for the month
+- **balance**: Net balance (Total Income - Total Expenses)
+- **expenseBreakdown**: Percentage breakdown of expenses by category
+
+**Query Parameters:**
+- `year` (optional, default: 2026): The year for the report
+- `month` (optional, default: 6): The month for the report (1-12)
+
 Do not include `userId` in the request body — the server extracts the authenticated user's email from the JWT and associates the record with that user.
 
 ## Project Structure
@@ -321,12 +356,14 @@ Personal-Finance-Tracker/
 │   │   │   │   ├── UserController.java
 │   │   │   │   ├── IncomeController.java
 │   │   │   │   ├── ExpenseController.java
-│   │   │   │   └── BalanceController.java
+│   │   │   │   ├── BalanceController.java
+│   │   │   │   └── ReportController.java
 │   │   │   ├── service/             # Business Logic
 │   │   │   │   ├── UserService.java
 │   │   │   │   ├── IncomeService.java
 │   │   │   │   ├── ExpenseService.java
-│   │   │   │   └── JwtService.java
+│   │   │   │   ├── JwtService.java
+│   │   │   │   └── ReportService.java
 │   │   │   ├── repository/          # Data Access Layer
 │   │   │   │   ├── UserRepository.java
 │   │   │   │   ├── IncomeRepository.java
@@ -339,7 +376,9 @@ Personal-Finance-Tracker/
 │   │   │   │   │   ├── IncomeResponse.java
 │   │   │   │   │   ├── ExpenseRequest.java
 │   │   │   │   │   ├── ExpenseResponse.java
-│   │   │   │   │   └── BalanceResponse.java
+│   │   │   │   │   ├── BalanceResponse.java
+│   │   │   │   │   ├── MonthlyReportResponse.java
+│   │   │   │   │   └── CategoryExpenseDto.java
 │   │   │   │   └── entity/          # JPA Entities
 │   │   │   │       ├── UserEntity.java
 │   │   │   │       ├── Income.java
@@ -499,5 +538,5 @@ For issues, questions, or suggestions, please open an issue in the repository or
 ---
 
 **Last Updated:** June 17, 2026  
-**Version:** 0.0.2-SNAPSHOT  
+**Version:** 0.0.3-SNAPSHOT  
 **Status:** In Development
